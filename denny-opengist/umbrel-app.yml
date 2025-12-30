@@ -1,0 +1,34 @@
+manifestVersion: 1
+id: denny-opengist
+name: Opengist
+tagline: A self-hosted Pastebin powered by Git
+icon: https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-opengist/logo.png
+category: developer tools
+version: "1.8.1"
+port: 6157
+description: >-
+  OpenGist is a powerful, open-source alternative to GitHub Gist that lets users self-host and manage code snippets on their own servers. Unlike GitHub Gist, OpenGist gives users full control over their data, with each snippet stored as a Git repository, making it easy to handle through standard Git commands or a streamlined web interface. It’s designed with flexibility and ease of use in mind, allowing users to create public, unlisted, or private snippets and access them over HTTP or SSH.
+
+
+  Key features include syntax highlighting, Markdown and CSV support, and a responsive UI with light and dark modes. OpenGist also integrates OAuth2 for logging in through GitHub, GitLab, or OpenID, with avatar support via Gravatar or OAuth providers. The admin panel offers tools to manage users, delete snippets, and clean up the database by syncing gists, while users can download snippets as raw files or ZIP archives.
+
+
+  For added compatibility, OpenGist supports databases like SQLite, PostgreSQL, and MySQL and can run smoothly within Docker, making it suitable for diverse deployment needs. With functionality like a JSON API, snippet embedding, and Git revisions history, OpenGist provides a robust and versatile platform for developers who want a private, scalable, and feature-rich environment for code sharing and collaboration.
+
+developer: Thomas Miceli
+website: https://opengist.io/
+submitter: dennysubke
+submission: https://github.com/getumbrel/umbrel-apps/pull/
+repo: https://github.com/thomiceli/opengist
+support: https://github.com/thomiceli/opengist/issues
+gallery:
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-opengist/1.jpg
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-opengist/2.jpg
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-opengist/3.jpg
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-opengist/4.jpg
+releaseNotes: >-
+  In the latest Opengist update, the passkey login option is now hidden if the login form is disabled. Additionally, fixes were applied to the Markdown preview display and the behavior of confirm popup messages.
+dependencies:
+path: ""
+defaultUsername: ""
+defaultPassword: ""

@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: denny-grist_server_1
+      APP_PORT: 8484
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: gristlabs/grist:1.6.1@sha256:d9d35c82799bfa2e0438bb60385fb0b550465dabde2a6e0ceca8afec1aae3305
+    restart: on-failure
+    environment:
+      TYPEORM_DATABASE: grist
+      TYPEORM_USERNAME: grist
+      TYPEORM_HOST: denny-grist_db_1
+      TYPEORM_LOGGING: false
+      TYPEORM_PASSWORD: gristpass123
+      TYPEORM_PORT: 5432
+      TYPEORM_TYPE: postgres
+      REDIS_URL: redis://denny-grist_redis_1
+    volumes:
+      - ${APP_DATA_DIR}/data/grist_data:/persist
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:14.18@sha256:c0aab7962b283cf24a0defa5d0d59777f5045a7be59905f21ba81a20b1a110c9
+    environment:
+      POSTGRES_DB: grist
+      POSTGRES_USER: grist
+      POSTGRES_PASSWORD: gristpass123
+    volumes:
+      - ${APP_DATA_DIR}/data/postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:8.0.3@sha256:a1e0a3b3a6cedd74d8ba44805b2497b93851a296f08a44962fedc03f1c490b47
+    volumes:
+      - ${APP_DATA_DIR}/data/redis_data:/data

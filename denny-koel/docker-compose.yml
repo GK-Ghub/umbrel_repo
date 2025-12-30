@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: denny-koel_server_1
+      APP_PORT: 80
+
+  server:
+    image: phanan/koel:7.5.2@sha256:2c7d7548882d6c737a8d44909a36850b2715c40e6bdf202fd63e2fdeacb4a883
+    depends_on:
+      - database
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_USERNAME=koel
+      - DB_PASSWORD=admin
+      - DB_DATABASE=koel
+    volumes:
+      - ${APP_DATA_DIR}/music:/music:rw
+      - ${APP_DATA_DIR}/data/covers:/var/www/html/public/img/covers:rw
+      - ${APP_DATA_DIR}/data/search_index:/var/www/html/storage/search-indexes:rw
+
+  database:
+    image: postgres:13@sha256:a4c9ad5add8a2e4c86e123bfdaf940d120c0541b782f317ab4e630ab3d391650
+    volumes:
+      - ${APP_DATA_DIR}/data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=koel
+      - POSTGRES_USER=koel
+      - POSTGRES_PASSWORD=admin

@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: denny-tududi_app_1
+      APP_PORT: 3002
+
+  app:
+    image: chrisvel/tududi:0.61@sha256:f9f20cdaf7704a83a83ef0bca7e12ba5e73993b2a7ff14ee5c14ba3cf1ad2226
+    user: "0:0"
+    restart: on-failure
+    environment:
+      TUDUDI_USER_EMAIL: login@tududi.admin
+      TUDUDI_USER_PASSWORD: umbrel
+      TUDUDI_SESSION_SECRET: 2f1a8d6c3b9e2f6d4e8f9b1c7a3d0c2e6b4a1f9d8e7c3a6b0d5f1e3a7c2b6d1
+      TUDUDI_INTERNAL_SSL_ENABLED: "false"
+      TUDUDI_ALLOWED_ORIGINS: http://${DEVICE_DOMAIN_NAME}:3382
+    volumes:
+      - ${APP_DATA_DIR}/data/db:/app/backend/db

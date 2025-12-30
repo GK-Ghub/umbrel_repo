@@ -1,0 +1,50 @@
+manifestVersion: 1
+id: denny-grist
+name: Grist
+tagline: A modern, open source spreadsheet that goes beyond the grid
+icon: https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-grist/logo.png
+category: files & productivity
+version: "1.6.1"
+port: 8484
+description: >-
+  Grist is a flexible, database-driven application that allows users to manage and analyze their data in a structured format. It combines the functionalities of a spreadsheet with those of a database, enabling users to create complex data models, establish relationships between data, and generate data visualizations.
+
+
+  Key Features of Grist:
+
+
+  📊 Flexible Tables: Grist enables users to create tables with various data types, including text, numbers, dates, and more.
+
+
+  📋 Formulas and Calculations: Similar to spreadsheet software, users can use formulas to perform calculations and dynamically link data.
+
+
+  🔗 Data Relationships: Grist allows for the establishment of relationships between different tables, facilitating more complex data analysis.
+
+
+  📈 Visualizations: The application provides functions for creating charts and reports to present data visually.
+
+
+  👥 Collaboration: Grist supports real-time collaboration, allowing multiple users to work on the same data simultaneously.
+
+
+  Grist is suitable for various applications, including project management, CRM, inventory management, and much more. It is often used by businesses and teams seeking a user-friendly, customizable solution for data management.
+developer: Grist Labs
+website: https://www.getgrist.com/
+submitter: dennysubke
+submission: https://github.com/getumbrel/umbrel-apps/pull/
+repo: https://github.com/gristlabs/grist-core
+support: https://github.com/gristlabs/grist-core/issues
+gallery:
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-grist/1.jpg
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-grist/2.jpg
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-grist/3.jpg
+releaseNotes: >-
+  Version 1.6.1 fully removes Python 2 support, requiring any existing Python 2 formulas to be migrated to Python 3. Grist now automatically checks for updates by default on the official Docker images. 
+  
+  
+  Additionally, proxy environment variables were updated, and various translations and bug fixes were made.
+dependencies:
+path: ""
+defaultUsername: ""
+defaultPassword: ""

@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: denny-eigenfocus_web_1
+      APP_PORT: 3000
+
+  web:
+    image: eigenfocus/eigenfocus:1.3.0-free@sha256:fe9595fd1901c61ec997de8995bba2804c7b3005613d1391dfbbed6efde44021
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data:/eigenfocus-app/app-data:rw
+    environment:
+      HTTP_AUTH_USER: admin
+      HTTP_AUTH_PASSWORD: umbrel
+      DEFAULT_HOST_URL: http://${DEVICE_DOMAIN_NAME}:3390
+      #FORCE_SSL: true
+      #ASSUME_SSL_REVERSE_PROXY: true

@@ -1,0 +1,70 @@
+manifestVersion: 1
+id: denny-answer
+name: Answer
+tagline: A Q&A platform software for teams at any scale
+icon: https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-answer/logo.png
+category: social
+version: "1.4.0"
+port: 9082
+description: >-
+  Apache Answer is an open-source business intelligence (BI) tool developed under the auspices of the Apache Software Foundation. It is designed to empower organizations to analyze and visualize their data effectively, facilitating better decision-making processes.
+
+  
+  Key Features:
+
+  
+  📊 Data Querying: Apache Answer provides robust querying capabilities, allowing users to interactively explore and manipulate data from various sources. Its query engine supports SQL-like syntax, making it accessible for users familiar with traditional database querying.
+
+  
+  🛠️ Dashboard Creation: Users can create custom dashboards that consolidate multiple data visualizations into a single interface. This feature enables stakeholders to monitor key performance indicators (KPIs) and other vital metrics at a glance.
+
+  
+  ✨ Data Visualization: Apache Answer offers a range of visualization options, including charts, graphs, tables, and more. Users can easily transform complex datasets into intuitive visual formats, making data insights more digestible.
+
+  
+  🔗 Integration with Data Sources: The tool is designed to integrate seamlessly with various data sources, including relational databases, cloud data warehouses, and flat files. This flexibility allows organizations to utilize existing data infrastructure without significant modifications.
+
+  
+  🖥️ User-Friendly Interface: One of Apache Answer's primary goals is to provide an intuitive user interface that minimizes the technical barrier for non-technical users. This accessibility ensures that employees across various departments can leverage data analytics without requiring extensive training.
+
+  
+  🤝 Collaboration and Sharing: Apache Answer supports collaboration among team members by allowing users to share dashboards and reports. This feature fosters a data-driven culture within organizations, where insights can be disseminated easily among stakeholders.
+
+ 
+  🌐 Open-Source Community: Being an open-source project, Apache Answer benefits from contributions by a global community of developers and users. This collaborative approach ensures continuous improvement, feature enhancements, and security updates.
+
+ 
+  Use Cases:
+
+
+  🔍 Performance Monitoring: Organizations can utilize Apache Answer to monitor business performance in real-time, helping them respond quickly to emerging trends or issues.
+  
+  
+  📈 Market Analysis: By integrating various data sources, businesses can analyze market conditions, customer behaviors, and competitor strategies, informing their strategic decisions.
+  
+  
+  ⚙️ Operational Efficiency: Apache Answer can identify inefficiencies in operations by analyzing workflow data, enabling businesses to streamline processes and reduce costs.
+
+
+  Apache Answer is a powerful tool for organizations looking to harness the potential of their data. Its user-friendly interface, robust querying capabilities, and comprehensive visualization options make it an invaluable asset in the quest for data-driven insights. As a product of the Apache Software Foundation, it continues to evolve, guided by the needs of its users and the ever-changing landscape of data analytics.
+
+
+  ⚠️ During the installation, you need to select the "SQLite database". Please make sure to specify the path "/data/answer.db" to store the data correctly and ensure the application runs smoothly.
+
+
+developer: Apache Software Foundation
+website: https://answer.apache.org/
+submitter: dennysubke
+submission: https://github.com/getumbrel/umbrel-apps/pull/
+repo: https://github.com/answerdev
+support: https://github.com/apache/incubator-answer/issues
+gallery:
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-answer/1.jpg
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-answer/2.jpg
+  - https://raw.githubusercontent.com/dennysubke/dennys-umbrel-app-gallery/main/denny-answer/3.jpg
+releaseNotes: >-
+  The latest update introduces several new features, including gamified badges for the Q&A platform, personalized question recommendations, a new search provider definition for browsers, support for Render type plugins, and a code highlighting plugin. Additionally, numerous bug fixes have been implemented, addressing issues such as incorrect mobile display reactions, extra characters in HTML source code, visibility of unanswered questions after an answer is deleted, and conflicts with embed plugin types.
+dependencies:
+path: ""
+defaultUsername: ""
+defaultPassword: ""

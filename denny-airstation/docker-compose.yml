@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: denny-airstation_web_1
+      APP_PORT: 7331
+
+  web:
+    image: cheatsnake/airstation:1.0.0-beta.4@sha256:1201c88b3ca8982b4237473c0e2c438d7224585657eb64a72690f3549b982b1c
+    restart: on-failure
+    environment:
+      AIRSTATION_SECRET_KEY: dOxZYTTZgXKMHkqLBIQVImayQXAVWdzGBPuFJKggzcgvgPJPXpWzqzKaUOIOGGIr
+      AIRSTATION_JWT_SIGN: LWpPZTOilFGAxBHoaTRqRPAEKXpVLUTUCodRDSRpMDCkxFdAyCIiVhkXaKHZwEBc
+    volumes:
+      - ${APP_DATA_DIR}/data/airstation_data:/app/storage:rw
+      - ${APP_DATA_DIR}/data/airstation_static:/app/static:rw
