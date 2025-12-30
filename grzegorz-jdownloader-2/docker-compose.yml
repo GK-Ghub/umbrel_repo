@@ -17,10 +17,37 @@ services:
       - no-new-privileges:true
       - seccomp:unconfined
     volumes:
-      - ${APP_DATA_DIR}/data/config:/config:rw
-      - ${APP_DATA_DIR}/data/output:/output:rw
+      - jdownloader_config:/config
+      - jdownloader_output:/output
     environment:
       TZ: Europe/Berlin
       USER_ID: 1000
       GROUP_ID: 1000
       DARK_MODE: 1
+
+volumes:
+  jdownloader_config:
+    driver: local
+    driver_opts:
+      type: cifs
+      o: >
+        username=SMB_USER,
+        password=SMB_PASSWORD,
+        uid=1000,
+        gid=1000,
+        iocharset=utf8,
+        vers=3.1.1
+      device: //192.168.1.163/raid/Umbrel_APPS/Jdownloader/config
+
+  jdownloader_output:
+    driver: local
+    driver_opts:
+      type: cifs
+      o: >
+        username=SMB_USER,
+        password=SMB_PASSWORD,
+        uid=1000,
+        gid=1000,
+        iocharset=utf8,
+        vers=3.1.1
+      device: //192.168.1.163/raid/Umbrel_APPS/Jdownloader/output
