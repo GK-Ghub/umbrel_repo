@@ -13,6 +13,7 @@ services:
   app:
     # Remove the @sha256 hash to allow the Pi to find the ARM64 version
     image: ghcr.io/ardoviniandrea/viniplay:0.10.1
+    platform: linux/arm64  # <--- Change this from amd64 to arm64
     # REMOVE the 'platform: linux/amd64' line entirely
     volumes:
       - ${APP_DATA_DIR}/data/app_data:/data
