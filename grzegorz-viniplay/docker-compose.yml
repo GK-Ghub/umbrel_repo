@@ -8,6 +8,7 @@ services:
 
   app:
     image: ghcr.io/ardoviniandrea/viniplay:0.10.1@sha256:8face41726d042ac2cd36283ed4742a0d6acd42cf19fa0677732514ff6371e01
+    platform: linux/amd64
     volumes:
       - ${APP_DATA_DIR}/data/app_data:/data
       - ${APP_DATA_DIR}/data/dvr:/dvr
