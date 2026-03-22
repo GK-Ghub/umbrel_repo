@@ -2,13 +2,18 @@ version: "3.7"
 
 services:
   app_proxy:
+    # Use the SERVICE NAME 'app' instead of the generated container name
+    # This is more robust as container names can change.
     environment:
-      APP_HOST: grzegorz-viniplay_app_1
+      APP_HOST: app 
       APP_PORT: 8998
+    depends_on:
+      - app
 
   app:
-    image: ghcr.io/ardoviniandrea/viniplay:0.10.1@sha256:8face41726d042ac2cd36283ed4742a0d6acd42cf19fa0677732514ff6371e01
-    platform: linux/amd64
+    # Remove the @sha256 hash to allow the Pi to find the ARM64 version
+    image: ghcr.io/ardoviniandrea/viniplay:0.10.1
+    # REMOVE the 'platform: linux/amd64' line entirely
     volumes:
       - ${APP_DATA_DIR}/data/app_data:/data
       - ${APP_DATA_DIR}/data/dvr:/dvr
