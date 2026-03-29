@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitLab Runner · Umbrel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0d0f;
+      --surface:   #141417;
+      --border:    #242428;
+      --border-hi: #e24329;
+      --accent:    #e24329;
+      --accent2:   #fc6d26;
+      --text:      #e8e8ec;
+      --muted:     #6b6b7a;
+      --green:     #39d98a;
+      --red:       #ff5f57;
+      --yellow:    #ffbd2e;
+      --radius:    10px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ── noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── header ── */
+    header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 40px;
+    }
+    .logo {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0;
+      box-shadow: 0 0 24px rgba(226,67,41,.3);
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px; font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    h1 span { color: var(--accent); }
+    .subtitle { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    /* ── status pill ── */
+    .status-bar {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 28px;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--muted);
+      transition: background .3s;
+      flex-shrink: 0;
+    }
+    .dot.online  { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .dot.offline { background: var(--red); }
+    #status-text { flex: 1; }
+    #runner-list { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    /* ── cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+      transition: border-color .2s;
+    }
+    .card:focus-within { border-color: var(--border-hi); }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title::before {
+      content: '';
+      display: inline-block; width: 3px; height: 14px;
+      background: var(--accent); border-radius: 2px;
+    }
+
+    /* ── form fields ── */
+    label { display: block; color: var(--muted); font-size: 11px; margin-bottom: 6px; margin-top: 14px; }
+    label:first-of-type { margin-top: 0; }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus { border-color: var(--accent); }
+    input::placeholder { color: var(--muted); }
+
+    /* ── buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none; cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; font-weight: 600;
+      transition: opacity .15s, transform .1s;
+      margin-top: 18px;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover:not(:disabled) { opacity: .88; }
+    .btn-danger  { background: transparent; color: var(--red);
+                   border: 1px solid var(--red); margin-left: 8px; }
+    .btn-danger:hover:not(:disabled) { background: rgba(255,95,87,.08); }
+
+    /* ── terminal output ── */
+    .terminal {
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      margin-top: 16px;
+      font-size: 11px;
+      color: #7fffac;
+      min-height: 60px;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      display: none;
+    }
+    .terminal.visible { display: block; }
+    .terminal.error { color: var(--red); }
+
+    /* ── config block ── */
+    .config-pre {
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 11px;
+      color: var(--muted);
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre;
+      margin-top: 14px;
+    }
+
+    /* ── spinner ── */
+    .spinner {
+      width: 12px; height: 12px;
+      border: 2px solid rgba(255,255,255,.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      display: none;
+    }
+    .spinner.visible { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── gitlab url badge ── */
+    .url-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(226,67,41,.1);
+      border: 1px solid rgba(226,67,41,.25);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--accent2);
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo">⚙</div>
+    <div>
+      <h1>GitLab <span>Runner</span></h1>
+      <div class="subtitle">Umbrel · Community App</div>
+    </div>
+  </header>
+
+  <!-- Status -->
+  <div class="status-bar">
+    <div class="dot" id="dot"></div>
+    <div>
+      <div id="status-text">Checking status…</div>
+      <div id="runner-list"></div>
+    </div>
+  </div>
+
+  <div class="url-badge">
+    🔗 GitLab instance: http://192.168.1.225:8929
+  </div>
+
+  <!-- Register -->
+  <div class="card">
+    <div class="card-title">Register Runner</div>
+
+    <label>Runner Token <span style="color:var(--accent)">(glrt-…)</span></label>
+    <input type="password" id="token" placeholder="glrt-xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+
+    <label>Runner Name</label>
+    <input type="text" id="runner-name" value="umbrel-runner" />
+
+    <label>Tags <span style="color:var(--muted)">(comma-separated)</span></label>
+    <input type="text" id="tags" value="umbrel,docker" />
+
+    <label>Default Docker Image</label>
+    <input type="text" id="image" value="alpine:latest" />
+
+    <div>
+      <button class="btn btn-primary" id="btn-register" onclick="register()">
+        <div class="spinner" id="spin-reg"></div>
+        ▶ Register
+      </button>
+      <button class="btn btn-danger" id="btn-unreg" onclick="unregister()">✕ Unregister All</button>
+    </div>
+
+    <div class="terminal" id="terminal"></div>
+  </div>
+
+  <!-- Config viewer -->
+  <div class="card">
+    <div class="card-title">config.toml <span style="color:var(--muted);font-size:10px;text-transform:none;letter-spacing:0">(tokens redacted)</span></div>
+    <pre class="config-pre" id="config-pre">Loading…</pre>
+  </div>
+
+</div>
+
+<script>
+  async function loadStatus() {
+    try {
+      const r = await fetch('/api/status');
+      const d = await r.json();
+      const dot = document.getElementById('dot');
+      document.getElementById('status-text').textContent =
+        d.registered ? `Runner registered` : 'Not registered — paste a token to connect';
+      dot.className = 'dot ' + (d.registered ? 'online' : 'offline');
+      document.getElementById('runner-list').textContent =
+        d.runners.length ? d.runners.map(r => `${r.name}  →  ${r.url}`).join('\n') : '';
+    } catch(e) {
+      document.getElementById('status-text').textContent = 'Could not reach runner service';
+    }
+  }
+
+  async function loadConfig() {
+    try {
+      const r = await fetch('/api/config');
+      const d = await r.json();
+      document.getElementById('config-pre').textContent = d.config || '(empty — runner not registered yet)';
+    } catch(e) {}
+  }
+
+  function showTerminal(text, isError) {
+    const t = document.getElementById('terminal');
+    t.textContent = text;
+    t.className = 'terminal visible' + (isError ? ' error' : '');
+  }
+
+  async function register() {
+    const token = document.getElementById('token').value.trim();
+    const name  = document.getElementById('runner-name').value.trim();
+    const tags  = document.getElementById('tags').value.trim();
+    const image = document.getElementById('image').value.trim();
+
+    if (!token) { showTerminal('ERROR: Token is required.', true); return; }
+    if (!token.startsWith('glrt-')) { showTerminal('ERROR: Token must start with glrt-', true); return; }
+
+    const btn = document.getElementById('btn-register');
+    const spin = document.getElementById('spin-reg');
+    btn.disabled = true; spin.classList.add('visible');
+    showTerminal('Registering runner…', false);
+
+    try {
+      const r = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, name, tags, image })
+      });
+      const d = await r.json();
+      if (d.error) { showTerminal('ERROR: ' + d.error, true); }
+      else { showTerminal('✓ Registered successfully!\n\n' + (d.output || ''), false); }
+    } catch(e) {
+      showTerminal('ERROR: ' + e.message, true);
+    } finally {
+      btn.disabled = false; spin.classList.remove('visible');
+      loadStatus(); loadConfig();
+    }
+  }
+
+  async function unregister() {
+    if (!confirm('Unregister ALL runners? This cannot be undone.')) return;
+    const btn = document.getElementById('btn-unreg');
+    btn.disabled = true;
+    showTerminal('Unregistering all runners…', false);
+    try {
+      const r = await fetch('/api/unregister', { method: 'POST' });
+      const d = await r.json();
+      if (d.error) showTerminal('ERROR: ' + d.error, true);
+      else showTerminal('✓ All runners unregistered.', false);
+    } catch(e) {
+      showTerminal('ERROR: ' + e.message, true);
+    } finally {
+      btn.disabled = false;
+      loadStatus(); loadConfig();
+    }
+  }
+
+  // Init
+  loadStatus();
+  loadConfig();
+  setInterval(loadStatus, 10000);
+</script>
+</body>
+</html>
