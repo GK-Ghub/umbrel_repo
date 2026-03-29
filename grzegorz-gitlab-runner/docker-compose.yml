@@ -1,0 +1,34 @@
+services:
+  app_proxy:
+    environment:
+      # Dummy port — GitLab Runner has no web UI, but Umbrel requires a proxy entry.
+      # We point it at a non-existent port; the runner itself works fine.
+      APP_HOST: $APP_GITLAB_RUNNER_IP
+      APP_PORT: 9252
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: grzegorz-gitlab-runner
+    restart: on-failure
+    network_mode: host          # lets the runner reach 192.168.1.225:8929 directly
+    volumes:
+      # Persist runner config (registration token, settings) across restarts
+      - ${APP_DATA_DIR}/config:/etc/gitlab-runner
+      # Expose Umbrel's Docker socket so the runner can spin up job containers
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # These are only used on FIRST boot to auto-register.
+      # After registration config.toml is written and these are ignored.
+      - GITLAB_URL=http://192.168.1.225:8929
+      - RUNNER_NAME=umbrel-runner
+      - RUNNER_EXECUTOR=docker
+      - RUNNER_DEFAULT_IMAGE=alpine:latest
+      - DOCKER_PRIVILEGED=true          # needed for Docker-in-Docker builds
+    entrypoint: >
+      bash -c "
+        if [ ! -f /etc/gitlab-runner/config.toml ] || ! grep -q 'glrt-' /etc/gitlab-runner/config.toml 2>/dev/null; then
+          echo '>>> config.toml not found or runner not registered yet.';
+          echo '>>> Start the runner container and then run register.sh (see README).';
+        fi;
+        exec gitlab-runner run --user=gitlab-runner --working-directory=/home/gitlab-runner
+      "
