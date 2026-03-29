@@ -1,16 +1,22 @@
 services:
   app_proxy:
     environment:
-      APP_HOST: grzegorz-gitlab-runner_runner_1
+      APP_HOST: grzegorz-gitlab-runner_gitlab-runner_1
       APP_PORT: 9252
       PROXY_AUTH_ADD: "false"
 
-  runner:
-    image: ghcr.io/grzegorz/gitlab-runner-umbrel:latest
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
     restart: on-failure
-    network_mode: host          # lets the runner reach 192.168.1.225:8929 directly
+    network_mode: host
     volumes:
-      # Persist runner config (registration token, settings) across restarts
       - ${APP_DATA_DIR}/config:/etc/gitlab-runner
-      # Expose Umbrel's Docker socket so the runner can spin up job containers
       - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: >
+      bash -c "
+        mkdir -p /etc/gitlab-runner &&
+        if [ ! -f /etc/gitlab-runner/config.toml ]; then
+          printf 'concurrent = 4\ncheck_interval = 10\n' > /etc/gitlab-runner/config.toml;
+        fi;
+        exec gitlab-runner run --user=gitlab-runner --working-directory=/home/gitlab-runner
+      "
