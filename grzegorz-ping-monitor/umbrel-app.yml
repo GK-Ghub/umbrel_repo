@@ -1,0 +1,25 @@
+manifestVersion: 1
+id: grzegorz-ping-monitor
+name: Ping Monitor
+tagline: Track which devices go offline and when
+icon: https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/main/ping-monitor/icon.svg
+category: networking
+version: "1.0.0"
+port: 4080
+description: >-
+  Ping Monitor continuously pings a list of IP addresses and shows you exactly
+  which device was offline and when. The main dashboard only shows entries where
+  at least one device was offline — no noise from times when everything is fine.
+  
+  Add any IP addresses you want to monitor (router, NAS, smart TV, etc.) and
+  compare their uptime side by side to find your internet culprit.
+developer: You
+website: https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
+dependencies: []
+repo: https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
+support: https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/issues
+gallery:
+  - https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/main/ping-monitor/screenshot1.png
+releaseNotes: Initial release.
+submitter: You
+submission: https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ping Monitor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;800&display=swap');
+
+  :root {
+    --bg: #0a0b0d;
+    --bg2: #0f1114;
+    --bg3: #161a1f;
+    --border: #1e252d;
+    --border2: #2a3340;
+    --text: #c8d4e0;
+    --text2: #6b7c8f;
+    --text3: #3d4f60;
+    --accent: #00c8ff;
+    --accent2: #0090bb;
+    --green: #00e676;
+    --red: #ff3d5a;
+    --yellow: #ffb800;
+    --card: #0d1117;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: -0.3px;
+    color: #fff;
+  }
+
+  .logo-icon {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  .status-dot.offline { background: var(--red); box-shadow: 0 0 8px var(--red); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .last-ping {
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .btn {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn:hover { background: var(--border); border-color: var(--accent); color: var(--accent); }
+  .btn.primary { background: var(--accent2); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: var(--accent); }
+  .btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+  /* NAV TABS */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    padding: 16px 24px 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .tab {
+    padding: 10px 18px;
+    font-size: 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* MAIN CONTENT */
+  main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* DEVICE STATUS CARDS */
+  .device-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .device-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .device-card.online { border-left: 3px solid var(--green); }
+  .device-card.offline { border-left: 3px solid var(--red); animation: alertBlink 1s ease-in-out 3; }
+
+  @keyframes alertBlink {
+    0%, 100% { border-left-color: var(--red); }
+    50% { border-left-color: #ff3d5a88; }
+  }
+
+  .device-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .device-ip {
+    font-size: 11px;
+    color: var(--text2);
+    margin-bottom: 12px;
+  }
+
+  .device-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot.offline { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  .device-ping {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 6px;
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text2);
+  }
+
+  .badge {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .badge.alert { background: #ff3d5a18; border-color: var(--red); color: var(--red); }
+
+  /* LOG TABLE */
+  .log-table-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .log-table th {
+    background: var(--bg3);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .log-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .log-table tr:last-child td { border-bottom: none; }
+
+  .log-table tr:hover td { background: #ffffff04; }
+
+  .time-cell {
+    color: var(--text2);
+    white-space: nowrap;
+    font-size: 11px;
+  }
+
+  .ping-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ping-val {
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .ping-val.good { color: var(--green); }
+  .ping-val.warn { color: var(--yellow); }
+  .ping-val.bad { color: var(--red); }
+
+  .offline-badge {
+    background: #ff3d5a20;
+    border: 1px solid #ff3d5a55;
+    color: var(--red);
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text3);
+  }
+
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 13px; }
+
+  /* TOGGLE */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .toggle-label { font-size: 12px; color: var(--text2); }
+
+  /* STATS PAGE */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .stat-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+
+  .stat-ip { font-size: 11px; color: var(--text2); margin-bottom: 16px; }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { color: var(--text2); }
+  .stat-val { color: #fff; font-weight: 500; }
+  .stat-val.green { color: var(--green); }
+  .stat-val.red { color: var(--red); }
+  .stat-val.yellow { color: var(--yellow); }
+
+  .uptime-bar {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    margin: 12px 0 8px;
+    overflow: hidden;
+  }
+
+  .uptime-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s;
+  }
+
+  /* SETTINGS PAGE */
+  .settings-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .settings-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  .device-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+
+  .device-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  input[type="text"], input[type="number"] {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--text3); }
+
+  .remove-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .remove-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .interval-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .interval-row input { width: 80px; }
+
+  .save-msg {
+    font-size: 12px;
+    color: var(--green);
+    opacity: 0;
+    transition: opacity 0.3s;
+    margin-left: 10px;
+  }
+
+  .save-msg.show { opacity: 1; }
+
+  /* DANGER ZONE */
+  .danger-zone {
+    border-color: #ff3d5a33;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text3);
+    font-size: 12px;
+  }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .show-all-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-switch {
+    width: 36px; height: 20px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .toggle-switch.on { background: var(--accent2); border-color: var(--accent); }
+
+  .toggle-knob {
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 14px; height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    transition: left 0.2s;
+  }
+
+  .toggle-switch.on .toggle-knob { left: 18px; }
+
+  .col-header { cursor: default; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">📡</div>
+    Ping Monitor
+  </div>
+  <div class="header-right">
+    <div class="status-dot" id="headerDot"></div>
+    <span class="last-ping" id="lastPingTime">—</span>
+    <button class="btn primary" onclick="manualPing()">Ping Now</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showPage('dashboard', this)">Dashboard</div>
+  <div class="tab" onclick="showPage('history', this)">History</div>
+  <div class="tab" onclick="showPage('stats', this)">Stats</div>
+  <div class="tab" onclick="showPage('settings', this)">Settings</div>
+</div>
+
+<main>
+
+  <!-- DASHBOARD PAGE -->
+  <div class="page active" id="page-dashboard">
+    <div class="device-grid" id="deviceCards">
+      <div class="loading">Loading devices...</div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">Recent Incidents</span>
+      <span class="badge alert" id="incidentCount">—</span>
+    </div>
+
+    <div class="log-table-wrap">
+      <table class="log-table">
+        <thead>
+          <tr id="dashTableHead">
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="dashTableBody">
+          <tr><td colspan="10"><div class="loading">Loading...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- HISTORY PAGE -->
+  <div class="page" id="page-history">
+    <div class="filter-row">
+      <label class="show-all-toggle" onclick="toggleShowAll()">
+        <div class="toggle-switch" id="showAllToggle">
+          <div class="toggle-knob"></div>
+        </div>
+        <span class="toggle-label">Show all entries (including when everything is online)</span>
+      </label>
+      <span class="badge" id="historyCount">—</span>
+    </div>
+
+    <div class="log-table-wrap">
+      <table class="log-table">
+        <thead>
+          <tr id="histTableHead">
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="histTableBody">
+          <tr><td colspan="10"><div class="loading">Loading...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- STATS PAGE -->
+  <div class="page" id="page-stats">
+    <div class="stats-grid" id="statsGrid">
+      <div class="loading">Loading stats...</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PAGE -->
+  <div class="page" id="page-settings">
+    <div class="settings-card">
+      <div class="settings-title">Monitored Devices</div>
+      <div class="device-list" id="deviceList"></div>
+      <button class="btn" onclick="addDevice()">+ Add Device</button>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-title">Ping Interval</div>
+      <div class="interval-row">
+        <span>Every</span>
+        <input type="number" id="intervalInput" min="5" max="3600" value="30"/>
+        <span>seconds (min 5)</span>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+      <button class="btn primary" onclick="saveConfig()">Save Settings</button>
+      <span class="save-msg" id="saveMsg">✓ Saved!</span>
+    </div>
+
+    <div class="settings-card danger-zone" style="margin-top:24px;">
+      <div class="settings-title" style="color:var(--red)">Danger Zone</div>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:14px;">
+        Clear all recorded ping history. This cannot be undone.
+      </p>
+      <button class="btn danger" onclick="clearLog()">Clear All History</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+let config = { devices: [], interval: 30 };
+let showAll = false;
+
+// ---- Tabs ----
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  el.classList.add('active');
+  if (name === 'stats') loadStats();
+  if (name === 'settings') renderSettingsForm();
+  if (name === 'history') loadHistory();
+}
+
+// ---- Fetch helpers ----
+async function apiFetch(url, opts) {
+  const r = await fetch(url, opts);
+  return r.json();
+}
+
+// ---- Format time ----
+function fmtTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, {
+    month: 'short', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+}
+
+function timeAgo(iso) {
+  const secs = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (secs < 60) return secs + 's ago';
+  if (secs < 3600) return Math.floor(secs / 60) + 'm ago';
+  if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
+  return Math.floor(secs / 86400) + 'd ago';
+}
+
+function pingClass(ms) {
+  if (ms === null) return 'bad';
+  if (ms < 20) return 'good';
+  if (ms < 100) return 'warn';
+  return 'bad';
+}
+
+// ---- Build table headers & rows ----
+function buildTableHeaders(devices, headEl) {
+  headEl.innerHTML = '<th class="col-header">Time</th>' +
+    devices.map(d => `<th class="col-header">${d.name}<br><span style="font-weight:400;opacity:.6;font-size:10px">${d.ip}</span></th>`).join('');
+}
+
+function buildTableRow(entry, devices) {
+  const hasOffline = entry.results.some(r => !r.alive);
+  let row = `<tr>
+    <td class="time-cell">${fmtTime(entry.timestamp)}<br><span style="font-size:10px;color:var(--text3)">${timeAgo(entry.timestamp)}</span></td>`;
+  devices.forEach(d => {
+    const r = entry.results.find(x => x.id === d.id);
+    if (!r) {
+      row += `<td style="color:var(--text3)">—</td>`;
+    } else if (r.alive) {
+      const cls = pingClass(r.time);
+      row += `<td><div class="ping-cell"><div class="dot online"></div><span class="ping-val ${cls}">${r.time !== null ? r.time.toFixed(1) + ' ms' : 'ok'}</span></div></td>`;
+    } else {
+      row += `<td><span class="offline-badge">OFFLINE</span></td>`;
+    }
+  });
+  row += '</tr>';
+  return row;
+}
+
+// ---- Dashboard ----
+async function loadDashboard() {
+  config = await apiFetch('/api/config');
+
+  // Status cards
+  const status = await apiFetch('/api/status');
+  const cardContainer = document.getElementById('deviceCards');
+
+  if (!status.results || status.results.length === 0) {
+    cardContainer.innerHTML = '<div class="loading">No ping data yet. Starting soon...</div>';
+  } else {
+    cardContainer.innerHTML = status.results.map(r => `
+      <div class="device-card ${r.alive ? 'online' : 'offline'}">
+        <div class="device-name">${r.name}</div>
+        <div class="device-ip">${r.ip}</div>
+        <div class="device-status">
+          <div class="dot ${r.alive ? 'online' : 'offline'}"></div>
+          <span>${r.alive ? 'Online' : 'Offline'}</span>
+        </div>
+        <div class="device-ping">${r.alive && r.time !== null ? '⊙ ' + r.time.toFixed(1) + ' ms' : ''}</div>
+      </div>
+    `).join('');
+
+    const anyOffline = status.results.some(r => !r.alive);
+    document.getElementById('headerDot').className = 'status-dot' + (anyOffline ? ' offline' : '');
+    document.getElementById('lastPingTime').textContent = status.timestamp ? timeAgo(status.timestamp) : '—';
+  }
+
+  // Incidents table (only entries with offline)
+  const log = await apiFetch('/api/log?limit=50');
+  const tbody = document.getElementById('dashTableBody');
+  const thead = document.getElementById('dashTableHead');
+
+  buildTableHeaders(config.devices, thead);
+
+  document.getElementById('incidentCount').textContent = log.length + ' incidents';
+
+  if (log.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="${config.devices.length + 1}">
+      <div class="empty-state">
+        <div class="icon">✅</div>
+        <p>No incidents recorded yet — all devices have been online!</p>
+      </div>
+    </td></tr>`;
+  } else {
+    tbody.innerHTML = log.map(e => buildTableRow(e, config.devices)).join('');
+  }
+}
+
+// ---- History ----
+let showAllHistory = false;
+
+function toggleShowAll() {
+  showAllHistory = !showAllHistory;
+  const toggle = document.getElementById('showAllToggle');
+  toggle.classList.toggle('on', showAllHistory);
+  loadHistory();
+}
+
+async function loadHistory() {
+  config = await apiFetch('/api/config');
+  const url = '/api/log?limit=500' + (showAllHistory ? '&all=1' : '');
+  const log = await apiFetch(url);
+
+  const thead = document.getElementById('histTableHead');
+  const tbody = document.getElementById('histTableBody');
+
+  buildTableHeaders(config.devices, thead);
+  document.getElementById('historyCount').textContent = log.length + ' entries';
+
+  if (log.length === 0) {
+    const msg = showAllHistory ? 'No ping data yet.' : 'No incidents found. Toggle "Show all entries" to see full history.';
+    tbody.innerHTML = `<tr><td colspan="${config.devices.length + 1}"><div class="empty-state"><div class="icon">📭</div><p>${msg}</p></div></td></tr>`;
+  } else {
+    tbody.innerHTML = log.map(e => buildTableRow(e, config.devices)).join('');
+  }
+}
+
+// ---- Stats ----
+async function loadStats() {
+  const stats = await apiFetch('/api/stats');
+  const grid = document.getElementById('statsGrid');
+
+  if (stats.length === 0) {
+    grid.innerHTML = '<div class="loading">No stats available yet.</div>';
+    return;
+  }
+
+  grid.innerHTML = stats.map(s => {
+    const uptime = parseFloat(s.uptime);
+    const color = uptime > 99 ? '#00e676' : uptime > 95 ? '#ffb800' : '#ff3d5a';
+    return `
+      <div class="stat-card">
+        <div class="stat-name">${s.name}</div>
+        <div class="stat-ip">${s.ip}</div>
+        <div class="uptime-bar">
+          <div class="uptime-fill" style="width:${uptime}%;background:${color}"></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Uptime</span>
+          <span class="stat-val" style="color:${color}">${s.uptime}%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Total pings</span>
+          <span class="stat-val">${s.total}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Online</span>
+          <span class="stat-val green">${s.online}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Offline</span>
+          <span class="stat-val ${s.offline > 0 ? 'red' : ''}">${s.offline}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Avg ping</span>
+          <span class="stat-val">${s.avgPing !== null ? s.avgPing + ' ms' : '—'}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ---- Settings ----
+function renderSettingsForm() {
+  const list = document.getElementById('deviceList');
+  document.getElementById('intervalInput').value = config.interval || 30;
+
+  list.innerHTML = config.devices.map((d, i) => `
+    <div class="device-row" id="dev-row-${i}">
+      <input type="text" placeholder="Name (e.g. Router)" value="${escHtml(d.name)}" id="dev-name-${i}"/>
+      <input type="text" placeholder="IP Address" value="${escHtml(d.ip)}" id="dev-ip-${i}"/>
+      <button class="remove-btn" onclick="removeDevice(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function addDevice() {
+  const newId = Date.now().toString();
+  config.devices.push({ id: newId, name: '', ip: '' });
+  renderSettingsForm();
+}
+
+function removeDevice(i) {
+  config.devices.splice(i, 1);
+  renderSettingsForm();
+}
+
+async function saveConfig() {
+  // Read values from form
+  config.devices = config.devices.map((d, i) => ({
+    id: d.id,
+    name: document.getElementById('dev-name-' + i)?.value || d.name,
+    ip: document.getElementById('dev-ip-' + i)?.value || d.ip
+  })).filter(d => d.ip.trim() !== '');
+
+  config.interval = parseInt(document.getElementById('intervalInput').value) || 30;
+
+  await apiFetch('/api/config', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(config)
+  });
+
+  const msg = document.getElementById('saveMsg');
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2500);
+
+  renderSettingsForm();
+}
+
+async function clearLog() {
+  if (!confirm('Clear ALL ping history? This cannot be undone.')) return;
+  await apiFetch('/api/log', { method: 'DELETE' });
+  alert('Log cleared.');
+}
+
+// ---- Manual ping ----
+async function manualPing() {
+  const btn = document.querySelector('.btn.primary');
+  btn.textContent = 'Pinging...';
+  btn.disabled = true;
+  await apiFetch('/api/ping', { method: 'POST' });
+  btn.textContent = 'Ping Now';
+  btn.disabled = false;
+  loadDashboard();
+}
+
+// ---- Init ----
+async function init() {
+  config = await apiFetch('/api/config');
+  loadDashboard();
+
+  // Auto-refresh dashboard every 15s
+  setInterval(() => {
+    const activePage = document.querySelector('.page.active');
+    if (activePage && activePage.id === 'page-dashboard') loadDashboard();
+  }, 15000);
+}
+
+init();
+</script>
+</body>
+</html>
