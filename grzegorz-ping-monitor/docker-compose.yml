@@ -3,7 +3,7 @@ version: "3.7"
 services:
   app_proxy:
     environment:
-      APP_HOST: ping-monitor_server_1
+      APP_HOST: grzegorz-ping-monitor_server_1
       APP_PORT: 4080
 
   server:
