@@ -8,7 +8,7 @@ services:
 
   server:
     # ZAMIAST sekcji build: używamy gotowego obrazu z GitHub
-    image: ghcr.io/gkuzma/grzegorz-ping-monitor:latest
+    image: ghcr.io/gk-ghub/grzegorz-ping-monitor:latest
     restart: on-failure
     stop_grace_period: 1m
     volumes:
