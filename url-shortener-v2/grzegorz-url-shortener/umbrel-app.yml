@@ -1,0 +1,24 @@
+manifestVersion: 1
+id: grzegorz-url-shortener
+name: URL Shortener
+tagline: Shorten and manage URLs on your home network
+icon: https://raw.githubusercontent.com/gk-ghub/grzegorz-url-shortener/main/grzegorz-url-shortener/icon.svg
+category: networking
+version: "1.0.0"
+port: 4090
+description: >-
+  A self-hosted URL shortener for your local network. Create short links like
+  192.168.1.23/plex that redirect anywhere. Supports custom slugs, click
+  analytics with referrer tracking, QR code generation, expiration dates
+  (by date or max clicks), password-protected links, and bulk JSON/CSV
+  import & export.
+developer: Grzegorz
+website: https://github.com/gk-ghub/grzegorz-url-shortener
+dependencies: []
+repo: https://github.com/gk-ghub/grzegorz-url-shortener
+support: https://github.com/gk-ghub/grzegorz-url-shortener/issues
+gallery:
+  - https://raw.githubusercontent.com/gk-ghub/grzegorz-url-shortener/main/grzegorz-url-shortener/screenshot1.png
+releaseNotes: Initial release.
+submitter: gk-ghub
+submission: https://github.com/gk-ghub/grzegorz-url-shortener

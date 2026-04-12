@@ -1,0 +1,15 @@
+{
+  "name": "grzegorz-url-shortener",
+  "version": "1.0.0",
+  "description": "Self-hosted URL shortener for Umbrel OS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.3",
+    "qrcode": "^1.5.3"
+  }
+}
