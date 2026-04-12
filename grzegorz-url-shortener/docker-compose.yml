@@ -10,6 +10,9 @@ services:
     image: ghcr.io/gk-ghub/grzegorz-url-shortener:latest
     restart: on-failure
     stop_grace_period: 1m
+    # DODAJEMY TĘ SEKCJĘ:
+    ports:
+      - "4091:4090"  # Mapujemy port 4091 (zewnętrzny) na 4090 (Twój PORT z environment)
     volumes:
       - ${APP_DATA_DIR}/data:/data
     environment:
