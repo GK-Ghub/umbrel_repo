@@ -1,0 +1,52 @@
+name: Build & Push Docker Images
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Ping Monitor
+        if: hashFiles('grzegorz-ping-monitor/app/Dockerfile') != ''
+        uses: docker/build-push-action@v5
+        with:
+          context: ./grzegorz-ping-monitor/app
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/grzegorz-ping-monitor:latest
+            ghcr.io/${{ github.repository_owner }}/grzegorz-ping-monitor:${{ github.sha }}
+
+      - name: Build and push URL Shortener
+        if: hashFiles('grzegorz-url-shortener/app/Dockerfile') != ''
+        uses: docker/build-push-action@v5
+        with:
+          context: ./grzegorz-url-shortener/app
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/grzegorz-url-shortener:latest
+            ghcr.io/${{ github.repository_owner }}/grzegorz-url-shortener:${{ github.sha }}
+
+      - name: Build and push Packtree
+        if: hashFiles('grzegorz-packtree/app/Dockerfile') != ''
+        uses: docker/build-push-action@v5
+        with:
+          context: ./grzegorz-packtree/app
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/packtree-2:latest
+            ghcr.io/${{ github.repository_owner }}/packtree-2:${{ github.sha }}
