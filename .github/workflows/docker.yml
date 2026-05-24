@@ -21,6 +21,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' >> ${GITHUB_ENV}
+
       - name: Build and push Ping Monitor
         if: hashFiles('grzegorz-ping-monitor/app/Dockerfile') != ''
         uses: docker/build-push-action@v5
@@ -28,8 +32,8 @@ jobs:
           context: ./grzegorz-ping-monitor/app
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/grzegorz-ping-monitor:latest
-            ghcr.io/${{ github.repository_owner }}/grzegorz-ping-monitor:${{ github.sha }}
+            ghcr.io/${{ env.OWNER_LC }}/grzegorz-ping-monitor:latest
+            ghcr.io/${{ env.OWNER_LC }}/grzegorz-ping-monitor:${{ github.sha }}
 
       - name: Build and push URL Shortener
         if: hashFiles('grzegorz-url-shortener/app/Dockerfile') != ''
@@ -38,8 +42,8 @@ jobs:
           context: ./grzegorz-url-shortener/app
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/grzegorz-url-shortener:latest
-            ghcr.io/${{ github.repository_owner }}/grzegorz-url-shortener:${{ github.sha }}
+            ghcr.io/${{ env.OWNER_LC }}/grzegorz-url-shortener:latest
+            ghcr.io/${{ env.OWNER_LC }}/grzegorz-url-shortener:${{ github.sha }}
 
       - name: Build and push Packtree
         if: hashFiles('grzegorz-packtree/app/Dockerfile') != ''
@@ -48,5 +52,5 @@ jobs:
           context: ./grzegorz-packtree/app
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/packtree-2:latest
-            ghcr.io/${{ github.repository_owner }}/packtree-2:${{ github.sha }}
+            ghcr.io/${{ env.OWNER_LC }}/packtree-2:latest
+            ghcr.io/${{ env.OWNER_LC }}/packtree-2:${{ github.sha }}
