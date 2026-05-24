@@ -1,0 +1,26 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: grzegorz-packtree_server_1
+      APP_PORT: 4000
+
+  server:
+    image: ghcr.io/gk-ghub/packtree-2:latest
+    restart: on-failure
+    stop_grace_period: 1m
+    volumes:
+      - ${APP_DATA_DIR}/data/uploads:/app/uploads
+    environment:
+      - PORT=4000
+      - MONGO_URI=mongodb://mongo:27017/packtree
+      - JWT_SECRET=changeme_secret
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/db:/data/db

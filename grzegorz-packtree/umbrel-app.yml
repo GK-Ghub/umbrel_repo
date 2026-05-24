@@ -1,0 +1,22 @@
+manifestVersion: 1
+id: grzegorz-packtree
+name: PackTree
+tagline: Hierarchical packing management and QR tracking
+icon: https://raw.githubusercontent.com/gk-ghub/packtree-2/main/icon.svg
+category: utilities
+version: "1.0.0"
+port: 4000
+description: >-
+  PackTree is a self-hosted logistics app for hierarchical packing management.
+  Track nested containers, scan QR codes on mobile, and generate return-home checklists.
+  Perfect for organized travelers and warehouse management.
+developer: gk-ghub
+website: https://github.com/gk-ghub/packtree-2
+dependencies: []
+repo: https://github.com/gk-ghub/packtree-2
+support: https://github.com/gk-ghub/packtree-2/issues
+gallery:
+  - https://raw.githubusercontent.com/gk-ghub/packtree-2/main/screenshot1.png
+releaseNotes: Initial release.
+submitter: gk-ghub
+submission: https://github.com/gk-ghub/packtree-2
