@@ -23,7 +23,7 @@ jobs:
 
       - name: set lower case owner name
         run: |
-          echo "OWNER_LC=${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]' >> ${GITHUB_ENV}
+          echo "OWNER_LC=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> ${GITHUB_ENV}
 
       - name: Build and push Ping Monitor
         if: hashFiles('grzegorz-ping-monitor/app/Dockerfile') != ''
