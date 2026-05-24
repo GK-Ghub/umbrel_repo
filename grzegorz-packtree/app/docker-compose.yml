@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: packtree_mongo
+    restart: unless-stopped
+    volumes:
+      - db-data:/data/db
+    ports:
+      - "27017:27017"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: packtree_backend
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    environment:
+      PORT: 4000
+      MONGO_URI: mongodb://mongo:27017/packtree
+      JWT_SECRET: ${JWT_SECRET:-changeme_secret}
+      UPLOADS_PATH: /app/uploads
+      CLIENT_ORIGIN: http://localhost:3000
+    volumes:
+      - uploads-data:/app/uploads
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: packtree_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  db-data:
+  uploads-data:
